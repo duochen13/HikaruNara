@@ -1,6 +1,6 @@
-Run
+Rnn
 ```
-cd front-end
+cd HikaruNara
 yarn start
 ```
 
