@@ -1,4 +1,4 @@
-try{
+try {
     var express = require('express');
     var bodyParser = require('body-parser');
     var cors = require('cors');
@@ -15,16 +15,17 @@ var port = 3001;
 
 var app = express(); // Define our app
 
-app.use(cors())
-;
+app.use(cors());
 // Configure app to use bodyParser()
 // This will let us get data from a POST
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 
 var sign_s3 = require('./controllers/sign_s3');
+var search_photo = require('./controllers/search_photo');
 
 app.use('/sign_s3', sign_s3.sign_s3);
+app.use('/search_photo', search_photo.search_photo);
 
 app.listen(port);
 
