@@ -8,10 +8,15 @@ class App extends Component {
     super(props);
     this.state = {
       success: false,
-      url: ""
+      url: "",
+      tmpLabel: "",
+      customLabels: []
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.labelChange = this.labelChange.bind(this);
+    this.addLabelClick = this.addLabelClick.bind(this);
+    this.clearLabels = this.clearLabels.bind(this);
   }
 
   handleChange = (e) => {
@@ -59,21 +64,55 @@ class App extends Component {
         this.setState({
           success: true
         })
-        // .catch(err => {
-        //   console.log("ERROR: ", err);
-        // })
+        .catch(err => {
+          console.log("ERROR: ", err);
+        })
       })//.then(result)
     }).catch(err => {
       console.log("ERROR: ", err);
     })
   }
 
+  labelChange = (e) => {
+    this.setState({
+      tmpLabel: e.target.value
+    })
+  }
+
+  addLabelClick = () => {
+    this.setState(prevState => ({
+      customLabels: [...prevState.customLabels, this.state.tmpLabel]
+    }));
+    this.setState({
+      tmpLabel: "",
+    })
+  }
+
+  clearLabels = () => {
+    console.log("clear labels: ", this.state.customLabels);
+    this.setState({
+      customLabels: []
+    })
+  }
+
   render() {
+    const customLabels = this.state.customLabels.map((label, index) =>
+      <p key={index}>{label}</p>  
+    );
+
     return(
       <div>
         <h1>Upload a File</h1>
-        <input onChange={this.handleChange} ref={(ref) => { this.uploadInput = ref; }} type="file" />
+        <input type="file" onChange={this.handleChange} ref={(ref) => { this.uploadInput = ref; }} />
         <br />
+
+        <input type="text" value={this.state.tmpLabel} onChange={this.labelChange} placeholder="Enter labels"></input>
+        <button onClick={this.addLabelClick}>Add Labels</button>
+        <button onClick={this.clearLabels}>Clear Labels</button>
+        <br />
+
+        {customLabels}
+
         <button onClick={this.handleUpload}>UPLOAD</button>
         <br />
         {this.state.success ? 
