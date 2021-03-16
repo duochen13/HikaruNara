@@ -2,19 +2,27 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import './App.css';
 // install node v11: https://gist.github.com/d2s/372b5943bce17b964a79
+// nvm use v10.24.0
 
 class App extends Component {
   constructor(props) { 
     super(props);
     this.state = {
+      // view variable
+      uploadView: true,
       // Uploda vars
       success: false,
       url: "",
       tmpLabel: "",
       customLabels: [],
       // Search vars
-      searchInput: ""
+      searchInput: "",
+      images: [],
+      objectKeys: []
     }
+    // Select View
+    this.selectUploadView = this.selectUploadView.bind(this);
+    this.selectSearchView = this.selectSearchView.bind(this);
     // Upload funcs declarations
     this.handleChange = this.handleChange.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
@@ -24,6 +32,21 @@ class App extends Component {
     // Search funcs declarations
     this.searchInputChange = this.searchInputChange.bind(this);
     this.searchClickSubmit = this.searchClickSubmit.bind(this);
+   
+  }
+
+  // control upload / search view
+  selectUploadView = () => {
+    this.setState({
+      uploadView: true
+    });
+    console.log("current uploadview: ", this.state.uploadView);
+  }
+  selectSearchView = () => {
+    this.setState({
+      uploadView: false
+    })
+    console.log("current uploadview: ", this.state.uploadView);
   }
   
   // upload function definitions
@@ -108,14 +131,17 @@ class App extends Component {
   }
 
   searchClickSubmit = () => {
+    // Reset images first
+    this.setState({
+      objectKeys: []
+    })
     const { searchInput } = this.state;
     console.log("searchInput: ", searchInput);
     // GET request to API gateway
-    // 'https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search';
-
+    // https://www.youtube.com/watch?v=uFsaiEhr1zs&t=467s
     axios.get('https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search', {
       params: {
-        query: searchInput
+        q: searchInput
       },
       options: {
         headers: { 
@@ -125,52 +151,96 @@ class App extends Component {
     })
     .then((response) => {
       console.log("get response: ", response);
-      const data = response.data.body;
-      console.log("bodydata: ", data);
+      const images = response.data.images; // {objectKey: labels:}
+      images.forEach((image, index) => (
+        // console.log("image.objectKey: ", image.objectKey, ", labels: ", image.labels)
+        this.setState((prevState) => ({
+          // imagess: [...prevState.images, {"objectKey":image.objectKey, "lables":image.labels}],
+          objectKeys: [...prevState.objectKeys, image]
+        }))
+      ))//forEach
+      // console.log("get images: ", this.state.images);
     })
     .catch((error) => {
-      console.log(error);
+      console.log("Image not found in s3 error: ", error);
     })
 
     // reset temp user search input
     this.setState({ searchInput: '' });
   }
 
+
   render() {
     const customLabels = this.state.customLabels.map((label, index) =>
-      <span key={index} >{label}</span>  
+      <div className="label" key={index} >{label}</div>  
     );
+    const images = this.state.images.map((image, index) =>
+      <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${image.objectKey}`} alt={index} />
+    )
+    // this.state.images.forEach((image, img_index) =>
+    //   console.log("image.objectKey: ", image.objectKey)
+    // );
+    const objectKeys = this.state.objectKeys.map((objectKey, index) =>
+      <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${objectKey}`} alt={index} />
+    )
+
+    const uploadView = this.state.uploadView;
 
     return(
       <div className="App">
-        <h1>Upload the Photo</h1>
-        <input type="file" onChange={this.handleChange} ref={(ref) => { this.uploadInput = ref; }} />
-        <br />
-
-        <input type="text" value={this.state.tmpLabel} onChange={this.labelChange} placeholder="Enter labels"></input>
-        <button onClick={this.handleUpload}>UPLOAD</button>
-        <br />
-
-        <button onClick={this.addLabelClick}>Add Labels</button>
-        <button onClick={this.clearLabels}>Clear Labels</button>
-        <br />
+        <div className="viewButton">
+          <button id={uploadView ? "select" : ""} onClick={this.selectUploadView}>Upload</button>
+          {/* <button onClick={this.selectUploadView}>Upload</button> */}
+          <button id={uploadView ? "" : "select"} onClick={this.selectSearchView}>Search</button>
+        </div>
         
-        {customLabels}
+        {uploadView ? 
+          <div>
 
-        <br />
-        
-        {this.state.success ? 
-          "Success!" : ""
-        }
-        <br />
+            <h1>Upload the Photo</h1>
+              <input type="file" onChange={this.handleChange} ref={(ref) => { this.uploadInput = ref; }} />
+              <br />
 
-        <h1>Search for Photo</h1>
-        <input type="text" value={this.state.searchInput} onChange={this.searchInputChange} placeholder="Search for photos"></input>
-        <button onClick={this.searchClickSubmit}>Search</button>
+              <input type="text" value={this.state.tmpLabel} onChange={this.labelChange} placeholder="Enter labels"></input>
+              <button onClick={this.handleUpload}>UPLOAD</button>
+              <br />
+
+              <button onClick={this.addLabelClick}>Add Labels</button>
+              <button onClick={this.clearLabels}>Clear Labels</button>
+              <br />
+              
+              <div className="customLabels">
+                {customLabels}
+              </div>
+
+              <br />
+              {this.state.success ? 
+                "Success!" : ""
+              }
+              <br />
+
+          </div>
+          
+          :
       
-        <h1>Photos </h1>
-        <img src='https://photo-cc-p2-bucket.s3.amazonaws.com/test3' alt="0" />
-        <img src='https://photo-cc-p2-bucket.s3.amazonaws.com/test9' alt="0" />
+          <div>
+
+            <h1>Search for Photo</h1>
+              <input type="text" value={this.state.searchInput} onChange={this.searchInputChange} placeholder="Search for photos"></input>
+              <button onClick={this.searchClickSubmit}>Search</button>
+            
+              <h1>Photos </h1>
+              {/* {images.lentgh === 0 ?
+                "No photos found"
+                :
+                images
+              } */}
+              {objectKeys}
+
+
+           </div>
+        }
+
       </div>
     )
   }

@@ -38,10 +38,44 @@
   }
 }
 
-button {
-  padding: 10px 10px;
-  margin: 10px 10px;
+
+.viewButton button{
+  padding: 10px;
+  margin: 0px;
+  background-color: white;
+  color: black;
+  font-size: 15px;
 }
+#select{
+  background-color: black;
+  color: white;
+}
+
+
+.viewButton button:hover{
+  padding: 10px;
+  margin: 0px;
+  background-color:black;
+  color: white;
+  font-size: 15px;
+}
+
+
+
+button {
+  border-radius: 5px;
+  padding: 10px 10px 10px 10px;
+  margin: 10px 10px 10px 0px;
+  background-color:white;
+  color: black;
+}
+button:hover {
+  padding: 10px 10px;
+  margin: 10px 10px 10px 0px;
+  background-color:black;
+  color: white;
+}
+
 
 input {
   height: 30px;
@@ -54,6 +88,22 @@ img {
   padding: 10px 10px;
 }
 
-span {
+/* span {
   padding: 20px 20px;
+} */
+.customLabels {
+  margin-top: 5px;
+  display: inline-block;
+}
+
+.label {
+  text-align: center;
+  background-color: black;
+  color: white;
+  /* width: 60px; */
+  display: inline-block;
+  height: 25px;
+  border-radius: 5px;
+  margin: 10px;
+  padding: 10px;
 }
