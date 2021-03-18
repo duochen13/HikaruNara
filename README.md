@@ -1,7 +1,8 @@
-Rnn
+Run
 ```
 cd HikaruNara
-yarn start   
+npm run build
+npm start   
 (localhost:3000)
 ```
 
@@ -14,11 +15,7 @@ controllers/sign_s3.js
 
 Install
 ```
-npm install aws-sdk --save 
-npm install dotenv --save 
-npm install --save react-s3
-npm install axios --save
-npm install cors
+npm install
 ```
 
 Others
@@ -31,4 +28,6 @@ Bucket=""
 ```
 
 Screenshot
-![alt text](https://github.com/duochen13/HikaruNara/blob/main/testdemo.jpg?raw=true)
+![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/main/upload_demo.jpg?raw=true)
+![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/search_dmeo.jpg?raw=true)
+
