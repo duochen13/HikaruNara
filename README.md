@@ -1,4 +1,4 @@
-[Demo](http://p2-front-end.s3-website-us-east-1.amazonaws.com/)
+[Click to Try](http://p2-front-end.s3-website-us-east-1.amazonaws.com/)
 
 Run
 ```
@@ -30,5 +30,6 @@ Bucket=""
 ```
 
 Screenshot
-![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/upload_demo.jpg?raw=true)
 ![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/search_demo.jpg?raw=true)
+![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/upload_demo.jpg?raw=true)
+
