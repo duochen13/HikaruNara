@@ -1,9 +1,11 @@
-Rnn
+[Click to Try](http://p2-front-end.s3-website-us-east-1.amazonaws.com/)
+
+Run
 ```
-cd HikaruNara/backend
-node app.js
-cd HikaruNara (open another terminal)
-yarn start   
+cd Voice-Controlled-Photo-Album
+rm package-lock.json (if it exists)
+npm run build
+npm start   
 (localhost:3000)
 ```
 
@@ -16,11 +18,7 @@ controllers/sign_s3.js
 
 Install
 ```
-npm install aws-sdk --save 
-npm install dotenv --save 
-npm install --save react-s3
-npm install axios --save
-npm install cors
+npm install
 ```
 
 Others
@@ -33,4 +31,6 @@ Bucket=""
 ```
 
 Screenshot
-![alt text](https://github.com/duochen13/HikaruNara/blob/main/testdemo.jpg?raw=true)
+![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/search_demo_0.jpg?raw=true)
+![alt text](https://github.com/duochen13/Voice-Controlled-Photo-Album/blob/main/upload_demo_0.jpg?raw=true)
+
