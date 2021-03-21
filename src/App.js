@@ -1,8 +1,101 @@
-import React, {Component} from 'react';
+import React, { useState, Component} from 'react';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import axios from 'axios';
 import './App.css';
 // install node v11: https://gist.github.com/d2s/372b5943bce17b964a79
 // nvm use v10.24.0
+
+function SearchBar(props) {
+  let [talk, changeTalkState] = useState(false);
+  let [searchInput, changeSearchInput] = useState("");
+  let [objectKeys, changeObjectKeysState] = useState([]);
+
+  const { transcript, resetTranscript } = useSpeechRecognition()
+
+  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+    return null
+  }
+
+  function startListening() {
+    SpeechRecognition.startListening();
+    changeTalkState(talk => !talk);
+  }
+
+  function stopListening() {
+    SpeechRecognition.stopListening();
+    changeTalkState(talk => !talk);
+    changeSearchInput(searchInput => transcript);
+  }
+
+  // Search function definitations
+  function searchInputOnChange(e) {
+    changeSearchInput(searchInput => e.target.value);
+  }
+
+  function searchClickSubmit() {
+    // Reset transcribe
+    resetTranscript();
+    // Reset objectKeys array first
+    changeObjectKeysState(objectKeys => []);
+    console.log("searchInput: ", searchInput);
+    // GET request to API gateway
+    axios.get('https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search', {
+      params: {
+        q: searchInput
+      },
+      options: {
+        headers: { 
+          "Access-Control-Allow-Origin": "*"
+        }
+      }
+    })
+    .then((response) => {
+      console.log("get response: ", response);
+      const images = response.data.images; // {objectKey: labels:}
+      images.forEach((image, index) => (
+        // console.log("image.objectKey: ", image.objectKey, ", labels: ", image.labels)
+        changeObjectKeysState(objectKeys => [...objectKeys, image])
+      ));//forEach
+      // console.log("get images: ", this.state.images);
+    })//then
+    .catch((error) => {
+      console.log("Image not found in s3 error: ", error);
+    })
+
+    // reset temp user search input
+    changeSearchInput(searchInput => '');
+  }
+
+  const photos = objectKeys.map((objectKey, index) => 
+    <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${objectKey}`} alt={index} />
+  );
+
+  return (
+    <div>
+
+      <input type="text" value={talk ? transcript : searchInput} 
+             onChange={searchInputOnChange} placeholder="Search for photos"></input>
+
+      {talk ? 
+        <span>
+          <button onClick={stopListening}>Stop</button>
+        </span>
+      :
+        <span>
+          <button onClick={startListening}>Talk</button>
+        </span>
+      }
+      
+      <button onClick={searchClickSubmit}>Search</button>
+      
+      <h1> {objectKeys.length === 0 ? "No Photos Found" : "Photos"} </h1>
+      {photos}
+
+
+    </div>
+  )
+}
+
 
 class App extends Component {
   constructor(props) { 
@@ -30,9 +123,14 @@ class App extends Component {
     this.addLabelClick = this.addLabelClick.bind(this);
     this.clearLabels = this.clearLabels.bind(this);
     // Search funcs declarations
-    this.searchInputChange = this.searchInputChange.bind(this);
-    this.searchClickSubmit = this.searchClickSubmit.bind(this);
+    // this.searchInputChange = this.searchInputChange.bind(this);
+    // this.searchClickSubmit = this.searchClickSubmit.bind(this);
    
+  }
+
+  // Transcribe
+  handleTranscribe = () => {
+    console.log("Handle Transcribe!");
   }
 
   // control upload / search view
@@ -126,48 +224,48 @@ class App extends Component {
   }
 
   // Search function definitations
-  searchInputChange = (e) => {
-    this.setState({ searchInput: e.target.value });
-  }
+  // searchInputChange = (e) => {
+  //   this.setState({ searchInput: e.target.value });
+  // }
 
-  searchClickSubmit = () => {
-    // Reset images first
-    this.setState({
-      objectKeys: []
-    })
-    const { searchInput } = this.state;
-    console.log("searchInput: ", searchInput);
-    // GET request to API gateway
-    // https://www.youtube.com/watch?v=uFsaiEhr1zs&t=467s
-    axios.get('https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search', {
-      params: {
-        q: searchInput
-      },
-      options: {
-        headers: { 
-          "Access-Control-Allow-Origin": "*"
-        }
-      }
-    })
-    .then((response) => {
-      console.log("get response: ", response);
-      const images = response.data.images; // {objectKey: labels:}
-      images.forEach((image, index) => (
-        // console.log("image.objectKey: ", image.objectKey, ", labels: ", image.labels)
-        this.setState((prevState) => ({
-          // imagess: [...prevState.images, {"objectKey":image.objectKey, "lables":image.labels}],
-          objectKeys: [...prevState.objectKeys, image]
-        }))
-      ))//forEach
-      // console.log("get images: ", this.state.images);
-    })
-    .catch((error) => {
-      console.log("Image not found in s3 error: ", error);
-    })
+  // searchClickSubmit = () => {
+  //   // Reset images first
+  //   this.setState({
+  //     objectKeys: []
+  //   })
+  //   const { searchInput } = this.state;
+  //   console.log("searchInput: ", searchInput);
+  //   // GET request to API gateway
+  //   // https://www.youtube.com/watch?v=uFsaiEhr1zs&t=467s
+  //   axios.get('https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search', {
+  //     params: {
+  //       q: searchInput
+  //     },
+  //     options: {
+  //       headers: { 
+  //         "Access-Control-Allow-Origin": "*"
+  //       }
+  //     }
+  //   })
+  //   .then((response) => {
+  //     console.log("get response: ", response);
+  //     const images = response.data.images; // {objectKey: labels:}
+  //     images.forEach((image, index) => (
+  //       // console.log("image.objectKey: ", image.objectKey, ", labels: ", image.labels)
+  //       this.setState((prevState) => ({
+  //         // imagess: [...prevState.images, {"objectKey":image.objectKey, "lables":image.labels}],
+  //         objectKeys: [...prevState.objectKeys, image]
+  //       }))
+  //     ))//forEach
+  //     // console.log("get images: ", this.state.images);
+  //   })
+  //   .catch((error) => {
+  //     console.log("Image not found in s3 error: ", error);
+  //   })
 
-    // reset temp user search input
-    this.setState({ searchInput: '' });
-  }
+  //   // reset temp user search input
+  //   this.setState({ searchInput: '' });
+  // }
 
 
   render() {
@@ -177,9 +275,6 @@ class App extends Component {
     const images = this.state.images.map((image, index) =>
       <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${image.objectKey}`} alt={index} />
     )
-    // this.state.images.forEach((image, img_index) =>
-    //   console.log("image.objectKey: ", image.objectKey)
-    // );
     const objectKeys = this.state.objectKeys.map((objectKey, index) =>
       <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${objectKey}`} alt={index} />
     )
@@ -226,16 +321,10 @@ class App extends Component {
           <div>
 
             <h1>Search for Photo</h1>
-              <input type="text" value={this.state.searchInput} onChange={this.searchInputChange} placeholder="Search for photos"></input>
-              <button onClick={this.searchClickSubmit}>Search</button>
-            
-              <h1>Photos </h1>
-              {/* {images.lentgh === 0 ?
-                "No photos found"
-                :
-                images
-              } */}
-              {objectKeys}
+              {/* <input type="text" value={this.state.searchInput} onChange={this.searchInputChange} placeholder="Search for photos"></input>
+              <button onClick={this.searchClickSubmit}>Search</button> */}
+
+              <SearchBar/>
 
 
            </div>

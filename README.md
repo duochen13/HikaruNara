@@ -1,6 +1,8 @@
 Rnn
 ```
-cd HikaruNara
+cd HikaruNara/backend
+node app.js
+cd HikaruNara (open another terminal)
 yarn start   
 (localhost:3000)
 ```
