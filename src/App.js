@@ -39,6 +39,7 @@ function SearchBar(props) {
     changeObjectKeysState(objectKeys => []);
     console.log("searchInput: ", searchInput);
     // GET request to API gateway
+    // https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1
     axios.get('https://2okr71h4ab.execute-api.us-east-1.amazonaws.com/v1/search', {
       params: {
         q: searchInput
@@ -50,8 +51,8 @@ function SearchBar(props) {
       }
     })
     .then((response) => {
-      console.log("get response: ", response);
       const images = response.data.images; // {objectKey: labels:}
+      console.log("images: ", images)
       images.forEach((image, index) => (
         // console.log("image.objectKey: ", image.objectKey, ", labels: ", image.labels)
         changeObjectKeysState(objectKeys => [...objectKeys, image])
@@ -272,12 +273,12 @@ class App extends Component {
     const customLabels = this.state.customLabels.map((label, index) =>
       <div className="label" key={index} >{label}</div>  
     );
-    const images = this.state.images.map((image, index) =>
-      <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${image.objectKey}`} alt={index} />
-    )
-    const objectKeys = this.state.objectKeys.map((objectKey, index) =>
-      <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${objectKey}`} alt={index} />
-    )
+    // const images = this.state.images.map((image, index) =>
+    //   <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${image.objectKey}`} alt={index} />
+    // )
+    // const objectKeys = this.state.objectKeys.map((objectKey, index) =>
+    //   <img key={index} src={`https://photo-cc-p2-bucket.s3.amazonaws.com/${objectKey}`} alt={index} />
+    // )
 
     const uploadView = this.state.uploadView;
 
