@@ -3,7 +3,6 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import axios from 'axios';
 import './App.css';
 // install node v11: https://gist.github.com/d2s/372b5943bce17b964a79
-// nvm use v10.24.0
 
 function SearchBar(props) {
   let [talk, changeTalkState] = useState(false);
@@ -46,7 +45,12 @@ function SearchBar(props) {
       },
       options: {
         headers: { 
-          "Access-Control-Allow-Origin": "*"
+
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+
         }
       }
     })
@@ -326,6 +330,8 @@ class App extends Component {
               <button onClick={this.searchClickSubmit}>Search</button> */}
 
               <SearchBar/>
+
+                nontrivial message
 
            </div>
         }
