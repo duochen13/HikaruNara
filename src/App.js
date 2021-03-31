@@ -327,8 +327,6 @@ class App extends Component {
 
               <SearchBar/>
 
-              nontrivial message
-
            </div>
         }
 
